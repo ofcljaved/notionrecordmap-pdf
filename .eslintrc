@@ -1,0 +1,20 @@
+{
+  "root": true,
+  "env": { "node": true },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2020
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "plugins": ["prettier", "only-warn"],
+  "rules": {
+    "semi": "error",
+    "no-multi-spaces": "error",
+    "space-before-blocks": "error"
+  }
+}

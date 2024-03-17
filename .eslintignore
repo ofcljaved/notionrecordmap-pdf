@@ -1,0 +1,4 @@
+dist
+.eslintrc
+.prettierrc
+.prettierignore
