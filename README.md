@@ -1,1 +1,2 @@
-# notionrecordmap-pdf
+# NotionRecordMap Pdf
+Initialized Project
