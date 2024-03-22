@@ -1,0 +1,193 @@
+[
+  {
+    "id": "642f6813-8552-496b-935e-5c4c5e5137c1",
+    "type": "page",
+    "properties": { "title": [["1 - What are hooks"]] }
+  },
+  {
+    "id": "4ad28147-7b75-4363-979f-08e4e3ee3a9e",
+    "type": "page",
+    "properties": { "title": [["Custom hooks in react"]] }
+  },
+  {
+    "id": "d73deacd-a5bf-4b76-ab4e-203926be14cc",
+    "type": "sub_header",
+    "properties": { "title": [["What are hooks"]] }
+  },
+  {
+    "id": "40c056ef-e520-41ee-a63a-13034e849aa3",
+    "type": "text",
+    "properties": {
+      "title": [
+        ["Hooks are a feature introduced in "],
+        ["React 16.8", [["c"]]],
+        [
+          " that allow you to use state and other React features without writing a class. They are functions that let you \"hook into\" React state and lifecycle features from function components."
+        ]
+      ]
+    }
+  },
+  {
+    "id": "307348bc-f433-4f5c-95a1-9aa9cb550ee1",
+    "type": "sub_sub_header",
+    "properties": { "title": [["State"]] }
+  },
+  {
+    "id": "8f94147d-a325-4c62-8b6a-0a4669af0b7b",
+    "type": "image",
+    "properties": {
+      "size": [["369.3KB"]],
+      "title": [["Screenshot 2024-01-26 at 4.29.56 AM.jpg"]],
+      "source": [
+        [
+          "https://prod-files-secure.s3.us-west-2.amazonaws.com/085e8ad8-528e-47d7-8922-a23dc4016453/4e730630-8349-430a-ae4b-da3e6947071b/Screenshot_2024-01-26_at_4.29.56_AM.jpg"
+        ]
+      ]
+    }
+  },
+  { "id": "3cc84815-22bf-487a-b0ce-f767b03f6e98", "type": "text" },
+  {
+    "id": "b50b0db9-3b17-4704-9c09-1b1099a7dfde",
+    "type": "toggle",
+    "properties": { "title": [["Functional"]] }
+  },
+  {
+    "id": "4f697187-9956-4b78-b728-58345f412162",
+    "type": "toggle",
+    "properties": { "title": [["Class Based"]] }
+  },
+  { "id": "496fd035-0894-456a-b805-dd9cfa058960", "type": "text" },
+  {
+    "id": "0d41e77d-6284-44e1-8167-956bd5953448",
+    "type": "sub_sub_header",
+    "properties": { "title": [["Lifecycle events"]] }
+  },
+  {
+    "id": "5fde9584-42ee-44a8-914b-29b64d8ffc36",
+    "type": "image",
+    "properties": {
+      "size": [["340.0KB"]],
+      "title": [["Screenshot 2024-01-26 at 4.35.02 AM.jpg"]],
+      "source": [
+        [
+          "https://prod-files-secure.s3.us-west-2.amazonaws.com/085e8ad8-528e-47d7-8922-a23dc4016453/d494f2ad-5486-4049-bd26-041c3d83539a/Screenshot_2024-01-26_at_4.35.02_AM.jpg"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "a0a6feec-2574-4ebf-bdac-8d73d97d5b4a",
+    "type": "toggle",
+    "properties": { "title": [["Functional"]] }
+  },
+  {
+    "id": "949cb815-5f1c-42ca-b143-c432160a9b45",
+    "type": "toggle",
+    "properties": { "title": [["Class based"]] }
+  },
+  {
+    "id": "402be059-531f-4009-8c73-9a20977f839c",
+    "type": "toggle",
+    "properties": { "title": [["Functional solution"]] }
+  },
+  {
+    "id": "cc1cbadd-da50-4788-b74a-a3b10211a8cf",
+    "type": "text",
+    "properties": {
+      "title": [["Until now we’re seen some commonly used hooks in React- "]]
+    }
+  },
+  {
+    "id": "e71cdb4c-38b9-496f-9292-cbc16ba748a6",
+    "type": "numbered_list",
+    "properties": { "title": [["useState"]] }
+  },
+  {
+    "id": "08841062-570f-4147-be3c-af180a00cb79",
+    "type": "numbered_list",
+    "properties": { "title": [["useEffect"]] }
+  },
+  {
+    "id": "1683a769-d6e3-4d81-a6ff-2074b84fd7b4",
+    "type": "numbered_list",
+    "properties": { "title": [["useMemo"]] }
+  },
+  {
+    "id": "6e294176-4cf5-47ff-812e-7cc6de9116d8",
+    "type": "numbered_list",
+    "properties": { "title": [["useCallback"]] }
+  },
+  {
+    "id": "a610fac3-6b9f-4fc4-b125-3159000475ce",
+    "type": "text",
+    "properties": {
+      "title": [
+        ["These hooks are provided to you by the "],
+        ["React", [["c"]]],
+        [" library. \n"]
+      ]
+    }
+  },
+  { "id": "c5cab3e4-3706-495e-9ed9-6eac752b8dd1", "type": "text" },
+  { "id": "c902faac-7dd6-4d23-a8c3-95c41e26abe8", "type": "text" },
+  {
+    "id": "98abad88-bada-4c2a-a06c-26556cb16e15",
+    "type": "code",
+    "properties": {
+      "title": [
+        [
+          "import React, { useState } from 'react';\n\nfunction MyComponent() {\n  const [count, setCount] = useState(0);\n\n  const incrementCount = () => {\n    setCount(count + 1);\n  };\n\n  return (\n    <div>\n      <p>{count}</p>\n      <button onClick={incrementCount}>Increment</button>\n    </div>\n  );\n}"
+        ]
+      ],
+      "language": [["JavaScript"]]
+    }
+  },
+  {
+    "id": "8112e9c5-1caf-4d38-a5d0-393484e8e962",
+    "type": "code",
+    "properties": {
+      "title": [
+        [
+          "class MyComponent extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = { count: 0 };\n  }\n\n  incrementCount = () => {\n    this.setState({ count: this.state.count + 1 });\n  }\n\n  render() {\n    return (\n      <div>\n        <p>{this.state.count}</p>\n        <button onClick={this.incrementCount}>Increment</button>\n      </div>\n    );\n  }\n}"
+        ]
+      ],
+      "language": [["JavaScript"]]
+    }
+  },
+  {
+    "id": "e65bb3fb-5af6-44c6-a78f-c43fe87430dd",
+    "type": "code",
+    "properties": {
+      "title": [
+        [
+          "import React, { useState, useEffect } from 'react';\n\nfunction MyComponent() {\n  useEffect(() => {\n    // Perform setup or data fetching here\n\n    return () => {\n      // Cleanup code (similar to componentWillUnmount)\n    };\n  }, []);\n\n  // Render UI\n}"
+        ]
+      ],
+      "language": [["JavaScript"]]
+    }
+  },
+  {
+    "id": "abced659-8ae4-46d6-b88e-22029a539d2a",
+    "type": "code",
+    "properties": {
+      "title": [
+        [
+          "class MyComponent extends React.Component {\n  componentDidMount() {\n    // Perform setup or data fetching here\n  }\n\n  componentWillUnmount() {\n    // Clean up (e.g., remove event listeners or cancel subscriptions)\n  }\n\n  render() {\n    // Render UI\n  }\n}"
+        ]
+      ],
+      "language": [["JavaScript"]]
+    }
+  },
+  {
+    "id": "45b93070-aebd-4fbc-968f-3b7d7e2e6db5",
+    "type": "code",
+    "properties": {
+      "title": [
+        [
+          "import React, { useEffect, useState } from 'react'\nimport './App.css'\n\nfunction App() {\n  const [render, setRender] = useState(true);\n\n  useEffect(() => {\n    setInterval(() => {\n      setRender(r => !r);\n    }, 5000)\n  }, []);\n\n  return (\n    <>\n      {render ? <MyComponent /> : <div></div>}\n    </>\n  )\n}\n\n\nfunction MyComponent() {\n  useEffect(() => {\n    console.error(\"component mounted\");\n\n    return () => {\n      console.log(\"component unmounted\");\n    };\n  }, []);\n\n  return <div>\n    From inside my component\n  </div>\n}\n\nexport default App"
+        ]
+      ],
+      "language": [["JavaScript"]]
+    }
+  }
+]
