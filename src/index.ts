@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { renderer } from './renderer';
 
 (async function getContent() {
   try {
@@ -7,23 +8,10 @@ import fs from 'fs/promises';
       'utf-8'
     );
     const data = JSON.parse(rawData);
-    const blockData = Object.values(data.block);
+    const javed = renderer({ recordMap: data, fullPage: true, darkMode: true });
+    const formatted = javed?.replace(/\s*(<[^>]+>)\s*/g, '$1');
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const content = blockData.map((block: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const main: any = {};
-      main.id = block.value.id;
-      main.type = block.value.type;
-      main.properties = block.value.properties;
-      return main;
-    });
-    const res = await fs.writeFile(
-      './src/assets/content.json',
-      JSON.stringify(content),
-      'utf-8'
-    );
-    console.log(res);
+    console.log(formatted);
   } catch (error) {
     console.log('--------Shit happens\n', error);
   }
