@@ -293,7 +293,10 @@ export function renderBlock({
     case 'image':
     case 'gist':
     case 'video': {
-      return renderAssets({ block, blockId, recordMap });
+      const ass = renderAssets({ block, blockId, recordMap });
+      console.log(ass);
+
+      return ass;
     }
     case 'drive': {
       return renderGoogledrive({ block, blockId });
