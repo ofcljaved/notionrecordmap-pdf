@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars';
 
-const figureSource = `
-<figure class='notion-asset-wrapper notion-asset-wrapper-{{type}} {{fullWidth}} {{blockId}}'>{{{assets}}}</figure>
+const audioSource = `
+<div class='notion-audio {{blockId}}'><audio controls preload='none' src={{source}} /></div>
 `;
 
-export const figureTemplate = Handlebars.compile(figureSource);
+export const audioTemplate = Handlebars.compile(audioSource);
