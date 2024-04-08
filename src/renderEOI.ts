@@ -1,3 +1,4 @@
+import { eoiTemplate } from './handlebars/eoi';
 import { Block } from './types';
 
 interface EOIProps {
@@ -12,19 +13,12 @@ export function renderEOI({ block, className, inline }: EOIProps) {
 
   const title = attributes.find((attr: any) => attr.id === 'title')?.values[0];
 
-  return `
-      <a
-        target='_blank'
-        rel='noopener noreferrer'
-        href=${original_url}
-        class='notion-external
-          ${inline ? 'notion-external-mention' : 'notion-external-block notion-row'}
-          ${className}'
-      >
-          <div class='notion-external-image'><img alt=${title}/></div>
-        <div class='notion-external-description'>
-          <div class='notion-external-title'>${title}</div>
-        </div>
-      </a>
-    `;
+  return eoiTemplate({
+    original_url,
+    title,
+    className,
+    inline: inline
+      ? 'notion-external-mention'
+      : 'notion-external-block notion-row',
+  });
 }
