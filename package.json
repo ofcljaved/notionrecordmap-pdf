@@ -19,6 +19,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.2.0",
     "@commitlint/config-conventional": "^19.1.0",
+    "@types/prismjs": "^1.26.3",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "eslint": "^8.57.0",
@@ -32,6 +33,7 @@
   },
   "dependencies": {
     "handlebars": "^4.7.8",
+    "prismjs": "^1.29.0",
     "puppeteer": "^22.6.1"
   }
 }

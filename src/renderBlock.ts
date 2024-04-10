@@ -7,7 +7,6 @@ import {
   bookmarkTemplate,
   bookmarkTitleTemplate,
   calloutTemplate,
-  codeTemplate,
   collectionTemplate,
   collectionViewPageTemplate,
   columnListTemplate,
@@ -41,6 +40,7 @@ import {
 import { renderAssets } from './renderAsset';
 import { renderAudio } from './renderAudio';
 import { renderCheckbox } from './renderCheckbox';
+import { renderCode } from './renderCode';
 import { renderEOI } from './renderEOI';
 import { renderFile } from './renderFile';
 import { renderGoogledrive } from './renderGoogledrive';
@@ -307,7 +307,7 @@ export function renderBlock({
       return equationTemplate({ blockId });
     }
     case 'code': {
-      return codeTemplate({ blockId });
+      return renderCode({ block, blockId, recordMap });
     }
     case 'column_list': {
       return columnListTemplate({ blockId, children });

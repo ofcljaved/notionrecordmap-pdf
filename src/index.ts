@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import { renderer } from './renderer';
 import puppeteer from 'puppeteer';
+import Handlebars from 'handlebars';
 
 // import express from 'express';
 
@@ -60,20 +61,37 @@ import puppeteer from 'puppeteer';
       'utf-8'
     );
     const data = JSON.parse(rawData);
-    const javed = renderer({ recordMap: data, fullPage: true, darkMode: true });
-    const formatted = javed?.replace(/\s*(<[^>]+>)\s*/g, '$1');
+
+    console.log(Array.isArray(data));
+
+    let notionPage = '';
+
+    if (Array.isArray(data)) {
+      data.forEach(d => {
+        notionPage += renderer({
+          recordMap: d,
+          fullPage: true,
+          darkMode: true,
+        });
+      });
+    } else {
+      notionPage = renderer({
+        recordMap: data,
+        fullPage: true,
+        darkMode: true,
+      });
+    }
     const style = await fs.readFile('./src/style.css', { encoding: 'utf-8' });
-    const htmlContent = `
-  <!DOCTYPE html>
-  <html lang="en">
-  <body class="notion-app dark-mode">
-    <style>
-      ${style};
-    </style>
-    ${formatted}
-  </body>
-  </html>
-  `;
+    const htmlSource = `<!DOCTYPE html>
+    <html lang="en">
+    <body class="notion-app dark-mode">
+      <style>{{style}}</style>
+      {{{notionPage}}}
+    </body>
+    </html>
+    `;
+    const htmlTemplate = Handlebars.compile(htmlSource);
+    const htmlContent = htmlTemplate({ notionPage, style });
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();

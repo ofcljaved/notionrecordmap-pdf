@@ -18,7 +18,7 @@ export function renderer({
   const id = blockId || Object.keys(recordMap.block)[0];
   const block = recordMap.block[id]?.value;
 
-  if (!block) return null;
+  if (!block) return '';
 
   const value = renderBlock({ level, block, recordMap, ...props });
   return value;
