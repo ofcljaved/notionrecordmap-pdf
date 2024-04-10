@@ -1,3 +1,43 @@
+import {
+  aliasTemplate,
+  blankTextTemplate,
+  bookmarkCoverTemplate,
+  bookmarkDescTemplate,
+  bookmarkLinkTemplate,
+  bookmarkTemplate,
+  bookmarkTitleTemplate,
+  calloutTemplate,
+  codeTemplate,
+  collectionTemplate,
+  collectionViewPageTemplate,
+  columnListTemplate,
+  columnTemplate,
+  dividerTemplate,
+  embedTemplate,
+  equationTemplate,
+  fullPageTemplate,
+  h1Template,
+  h2Template,
+  h3Template,
+  innerHeaderTemplate,
+  liTemplate,
+  nonFullPageTemplate,
+  nonToggleableHeaderTemplate,
+  olTemplate,
+  pageTemplate,
+  quoteTemplate,
+  tableTemplate,
+  tdTemplate,
+  textChildrenTemplate,
+  textTemplate,
+  tocTemplate,
+  todoTemplate,
+  toggleTemplate,
+  toggleableTemplate,
+  trTemplate,
+  transclusionTemplate,
+  ulTemplate,
+} from './handlebars/block';
 import { renderAssets } from './renderAsset';
 import { renderAudio } from './renderAudio';
 import { renderCheckbox } from './renderCheckbox';
@@ -78,54 +118,56 @@ export function renderBlock({
               ?.value?.icon ?? defaultPageIcon;
           const isPageIconUrl = pageIcon && isUrl(pageIcon);
 
-          return `<div class='notion notion-app ${darkMode ? 'dark-mode' : 'light-mode'} ${blockId}' >
-              <div class='notion-frame'>
-                <div class='notion-page-scroller'>
-                  <main class='notion-page notion-page-no-cover ${page_icon ? 'notion-page-has-icon' : 'notion-page-no-icon'} ${isPageIconUrl ? 'notion-page-has-image-icon' : 'notion-page-has-text-icon'} notion-full-page ${page_full_width ? 'notion-full-width' : ''} ${page_small_text ? 'notion-small-text' : ''}'>
-                    ${
-                      page_icon
-                        ? rendererPageIcon({
-                            block,
-                            defaultIcon: defaultPageIcon,
-                            inline: false,
-                            recordMap,
-                            darkMode,
-                          })
-                        : ''
-                    }
-                    <h1 class='notion-title'>
-                      ${renderText({ value: properties?.title || null, block, recordMap })}
-                    </h1>
-                    ${
-                      block.type !== 'collection_view_page' &&
-                      `<div class='notion-page-content'>
-                        <article class='notion-page-content-inner'>
-                          ${children}
-                        </article>
-                      </div>`
-                    }
-                  </main>
-                </div>
-              </div>
-            </div>`;
+          const collectionViewPage =
+            block.type !== 'collection_view_page'
+              ? collectionViewPageTemplate({ children })
+              : '';
+
+          return fullPageTemplate({
+            darkMode: darkMode ? 'dark-mode' : 'light-mode',
+            blockId,
+            pageIcon: page_icon
+              ? 'notion-page-has-icon'
+              : 'notion-page-no-icon',
+            pageIconUrl: isPageIconUrl
+              ? 'notion-page-has-image-icon'
+              : 'notion-page-has-text-icon',
+            fullWidth: page_full_width ? 'notion-full-width' : '',
+            smallText: page_small_text ? 'notion-small-text' : '',
+            rendererPageIcon: page_icon
+              ? rendererPageIcon({
+                  block,
+                  defaultIcon: defaultPageIcon,
+                  inline: false,
+                  recordMap,
+                  darkMode,
+                })
+              : '',
+            renderText: renderText({
+              value: properties?.title || null,
+              block,
+              recordMap,
+            }),
+            collectionViewPage,
+          });
         } else {
-          return `<main
-              class='notion ${darkMode ? 'dark-mode' : 'light-mode'} notion-page ${page_full_width ? 'notion-full-width' : ''} ${page_small_text ? 'notion-small-text' : ''} ${blockId}'
-            >
-              ${block.type !== 'collection_view_page' && children}
-            </main>`;
+          return nonFullPageTemplate({
+            blockId,
+            darkMode: darkMode ? 'dark-mode' : 'light-mode',
+            fullWidth: page_full_width ? 'notion-full-width' : '',
+            smallText: page_small_text ? 'notion-small-text' : '',
+            children: block.type !== 'collection_view_page' ? children : '',
+          });
         }
       } else {
         const blockColor = block.format?.block_color;
 
-        return `
-          <a
-            class='notion-page-link ${blockColor && `notion-${blockColor}`} ${blockId}'
-            href=${mapPageUrl(block.id)}
-          >
-            ${renderPageTitle({ block, recordMap })}
-          </a>
-        `;
+        return pageTemplate({
+          blockId,
+          blockColor: blockColor ? `notion-${blockColor}` : '',
+          url: mapPageUrl(block.id),
+          renderPageTitle: renderPageTitle({ block, recordMap }),
+        });
       }
     case 'header':
     case 'sub_header':
@@ -158,119 +200,76 @@ export function renderBlock({
       const isH2 = block.type === 'sub_header';
       const isH3 = block.type === 'sub_sub_header';
 
-      const classNameStr = ` ${isH1 ? 'notion-h notion-h1' : ''} ${isH2 ? 'notion-h notion-h2' : ''} ${isH3 ? 'notion-h notion-h3' : ''} ${blockColor ? `notion-${blockColor}` : ''} ${indentLevelClass} ${blockId}`;
+      const classNameStr = `${isH1 ? 'notion-h notion-h1' : ''} ${isH2 ? 'notion-h notion-h2' : ''} ${isH3 ? 'notion-h notion-h3' : ''} ${blockColor ? `notion-${blockColor}` : ''} ${indentLevelClass} ${blockId}`;
 
-      const innerHeader = `
-        <span>
-          <div id="${id}" class='notion-header-anchor'></div>
-          ${
-            !block.format?.toggleable
-              ? `<a class='notion-hash-link' href='#${id}' title='${title}'>
-              <svg
-                viewBox='0 0 16 16'
-                width='16'
-                height='16'
-              >
-                <path
-                  fillRule='evenodd'
-                  d='M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z'
-                />
-              </svg>
-            </a>`
-              : ''
-          }
-          <span class='notion-h-title'>
-            ${renderText({ block, recordMap, value: block.properties.title })}
-          </span>
-        </span>
-      `;
+      const toggleableHeader = !block.format?.toggleable
+        ? nonToggleableHeaderTemplate({ id, title })
+        : '';
+
+      const innerHeader = innerHeaderTemplate({
+        id,
+        toggleableHeader,
+        renderText: renderText({
+          block,
+          recordMap,
+          value: block.properties.title,
+        }),
+      });
+
       let headerBlock = null;
 
       if (isH1) {
-        headerBlock = `
-          <h2 class='${classNameStr}' data-id="${id}">
-            ${innerHeader}
-          </h2>
-        `;
+        headerBlock = h1Template({ classNameStr, id, innerHeader });
       } else if (isH2) {
-        headerBlock = `
-          <h3 class='${classNameStr}' data-id="${id}">
-            ${innerHeader}
-          </h3>
-        `;
+        headerBlock = h2Template({ classNameStr, id, innerHeader });
       } else {
-        headerBlock = `
-          <h4 class='${classNameStr}' data-id="${id}">
-            ${innerHeader}
-          </h4>
-        `;
+        headerBlock = h3Template({ classNameStr, id, innerHeader });
       }
 
       if (block.format?.toggleable) {
-        return `
-          <details class='notion-toggle ${blockId}' open>
-            <summary>${headerBlock}</summary>
-            <div>${children}</div>
-          </details>
-        `;
+        return toggleableTemplate({ blockId, headerBlock, children });
       } else {
         return headerBlock;
       }
     }
     case 'divider': {
-      return `<hr class='notion-hr ${blockId}' />`;
+      return dividerTemplate({ blockId });
     }
     case 'text': {
       if (!block.properties && !block.content?.length) {
-        return `<div class='notion-blank ${blockId}'>&nbsp;</div>`;
+        return blankTextTemplate({ blockId });
       }
 
       const blockColor = block.format?.block_color;
+      const textChildren = children ? textChildrenTemplate({ children }) : '';
 
-      return `
-        <div class='notion-text ${blockColor ? `notion-${blockColor}` : ''} ${blockId}'>
-          ${
-            block.properties?.title
-              ? renderText({ block, recordMap, value: block.properties.title })
-              : ''
-          }
-          ${
-            children
-              ? `<div class='notion-text-children'>${children}</div>`
-              : ''
-          }
-        </div>
-      `;
+      return textTemplate({
+        blockColor: blockColor ? `notion-${blockColor}` : '',
+        blockId,
+        title: block.properties?.title
+          ? renderText({ block, recordMap, value: block.properties.title })
+          : '',
+        children: textChildren,
+      });
     }
     case 'bulleted_list':
     case 'numbered_list': {
       const wrapList = (content: string, start?: number) =>
         block.type === 'bulleted_list'
-          ? `<ul class='notion-list notion-list-disc ${blockId}'>
-            ${content}
-          </ul>`
-          : `<ol start=${start} class='notion-list notion-list-numbered ${blockId}'>
-            ${content}
-          </ol>`;
-      let output: string = '';
+          ? ulTemplate({ blockId, content })
+          : olTemplate({ blockId, content, start });
+      let output: string = block.properties
+        ? liTemplate({
+            renderText: renderText({
+              block,
+              recordMap,
+              value: block.properties.title,
+            }),
+          })
+        : '';
 
       if (block.content) {
-        output = `
-              ${
-                block.properties
-                  ? `<li>
-                  ${renderText({ block, recordMap, value: block.properties.title })}
-                </li>`
-                  : ''
-              }
-              ${wrapList(children)}
-            `;
-      } else {
-        output = block.properties
-          ? `<li>
-              ${renderText({ block, recordMap, value: block.properties.title })}
-            </li>`
-          : '';
+        output += wrapList(children);
       }
 
       const isTopLevel =
@@ -280,7 +279,7 @@ export function renderBlock({
       return isTopLevel ? wrapList(output, start) : output;
     }
     case 'embed': {
-      return `<div>${blockId} not supported</div>`;
+      return embedTemplate({ blockId });
     }
     case 'replit':
     case 'tweet':
@@ -293,10 +292,7 @@ export function renderBlock({
     case 'image':
     case 'gist':
     case 'video': {
-      const ass = renderAssets({ block, blockId, recordMap });
-      console.log(ass);
-
-      return ass;
+      return renderAssets({ block, blockId, recordMap });
     }
     case 'drive': {
       return renderGoogledrive({ block, blockId });
@@ -308,13 +304,13 @@ export function renderBlock({
       return renderFile({ block, blockId, recordMap });
     }
     case 'equation': {
-      return `<div>${blockId} equation not supported</div>`;
+      return equationTemplate({ blockId });
     }
     case 'code': {
-      return `<div>${blockId} code not supported</div>`;
+      return codeTemplate({ blockId });
     }
     case 'column_list': {
-      return `<div class='notion-row ${blockId}'>${children}</div>`;
+      return columnListTemplate({ blockId, children });
     }
     case 'column': {
       const spacerWidth = `min(32px, 4vw)`;
@@ -327,41 +323,44 @@ export function renderBlock({
         columns - 1
       } * ${spacerWidth})) * ${ratio})`;
 
-      return `
-          <div class='notion-column ${blockId}' style='width:${width}'>
-            ${children}
-          </div>
-          <div class='notion-spacer' />
-        `;
+      return columnTemplate({ blockId, width, children });
     }
     case 'quote': {
       if (!block.properties) return '';
       const blockColor = block.format?.block_color;
-      return `
-        <blockquote class='notion-quote ${blockColor ? `notion-${blockColor}` : ''} ${blockId}'>
-          <div>
-            ${renderText({ value: block.properties.title, block, recordMap })}
-          </div>
-          ${children}
-        </blockquote>
-      `;
+      return quoteTemplate({
+        blockId,
+        blockColor: blockColor ? `notion-${blockColor}` : '',
+        renderText: renderText({
+          value: block.properties.title,
+          block,
+          recordMap,
+        }),
+        children,
+      });
     }
     case 'collection_view': {
-      return `<div>${blockId} collection not supported</div>`;
+      return collectionTemplate({ blockId });
     }
     case 'callout': {
-      return `
-          <div
-            class='notion-callout ${block.format?.block_color ? `notion-${block.format?.block_color}_co` : ''} ${blockId}'
-            )}
-          >
-            ${rendererPageIcon({ block, recordMap, defaultIcon: null, darkMode })}
-            <div className='notion-callout-text'>
-              ${renderText({ value: block.properties?.title, block, recordMap })}
-              ${children}
-            </div>
-          </div>
-        `;
+      return calloutTemplate({
+        blockId,
+        blockColor: block.format?.block_color
+          ? `notion-${block.format?.block_color}_co`
+          : '',
+        rendererPageIcon: rendererPageIcon({
+          block,
+          recordMap,
+          defaultIcon: null,
+          darkMode,
+        }),
+        renderText: renderText({
+          value: block.properties?.title,
+          block,
+          recordMap,
+        }),
+        children,
+      });
     }
     case 'bookmark': {
       if (!block.properties) return '';
@@ -385,65 +384,53 @@ export function renderBlock({
         }
       }
 
-      return `
-        <div class='notion-row'>
-          <a target='_blank' rel='noopener noreferrer' class= 'notion-bookmark ${block.format?.block_color ? `notion-${block.format.block_color}` : ''} ${blockId}' href=${link[0][0]}
-          >
-            <div>
-              ${
-                title
-                  ? `<div class='notion-bookmark-title'>
-                  ${renderText({ value: [[title]], block, recordMap })}
-                </div>`
-                  : ''
-              }
-              ${
-                block.properties?.description
-                  ? `<div class='notion-bookmark-description'>
-                  ${renderText({ value: block.properties?.description, block, recordMap })}
-                </div>`
-                  : ''
-              }
-              <div class='notion-bookmark-link'>
-                ${
-                  block.format?.bookmark_icon
-                    ? `<div class='notion-bookmark-link-icon'>
-                    <img
-                      src=${mapImageUrl(block.format?.bookmark_icon, block)}
-                      alt=${title}
-                    />
-                  </div>`
-                    : ''
-                }
-                <div class='notion-bookmark-link-text'>
-                ${renderText({ value: link, block, recordMap })}
-                </div>
-              </div>
-            </div>
-
-            ${
-              block.format?.bookmark_cover
-                ? `<div className='notion-bookmark-image'>
-                <img
-                  src=${mapImageUrl(block.format?.bookmark_cover, block)}
-                  alt=${getTextContent(block.properties?.title)}
-                  style='object-fit: cover;'
-                />
-              </div>`
-                : ''
-            }
-          </a>
-        </div>
-      `;
+      const bookmarkTitle = title
+        ? bookmarkTitleTemplate({
+            renderText: renderText({ value: [[title]], block, recordMap }),
+          })
+        : '';
+      const bookmarkDesc = block.properties?.description
+        ? bookmarkDescTemplate({
+            renderText: renderText({
+              value: block.properties?.description,
+              block,
+              recordMap,
+            }),
+          })
+        : '';
+      const bookmarkLink = block.format?.bookmark_icon
+        ? bookmarkLinkTemplate({
+            url: mapImageUrl(block.format?.bookmark_icon, block),
+            title,
+          })
+        : '';
+      const bookmarkCover = bookmarkCoverTemplate({
+        url: mapImageUrl(block.format?.bookmark_cover, block),
+        alt: getTextContent(block.properties?.title),
+      });
+      return bookmarkTemplate({
+        blockColor: block.format?.block_color
+          ? `notion-${block.format.block_color}`
+          : '',
+        blockId,
+        link: link[0][0],
+        bookmarkTitle,
+        bookmarkDesc,
+        bookmarkLink,
+        renderText: renderText({ value: link, block, recordMap }),
+        bookmarkCover,
+      });
     }
     case 'toggle': {
-      return `
-        <details class='notion-toggle ${blockId}' open>
-          <summary>
-            ${renderText({ value: block.properties?.title, block, recordMap })}
-          </summary>
-          <div>${children}</div>
-        </details>`;
+      return toggleTemplate({
+        blockId,
+        renderText: renderText({
+          value: block.properties?.title,
+          block,
+          recordMap,
+        }),
+        children,
+      });
     }
     case 'table_of_contents': {
       const page = getBlockParentPage(block, recordMap);
@@ -452,41 +439,31 @@ export function renderBlock({
       const toc = getPageTableOfContents(page, recordMap);
       const blockColor = block.format?.block_color;
 
-      return `
-        <div
-          class='notion-table-of-contents ${blockColor ? `notion-${blockColor}` : ''} ${blockId}>
-          ${toc
-            .map(
-              tocItem =>
-                `<a key=${tocItem.id} href='#${uuidToId(tocItem.id)}' class='notion-table-of-contents-item'>
-              <span class='notion-table-of-contents-item-body'
-                style='display:inline-block; margin-left: ${tocItem.indentLevel * 24};'
-              >
-                ${tocItem.text}
-              </span>
-            </a>`
-            )
-            .join('')}
-        </div>
-      `;
+      return tocTemplate({
+        blockColor: blockColor ? `notion-${blockColor}` : '',
+        blockId,
+        toc,
+        uuidToId,
+        multiply: (x: number, y: number) => x * y,
+      });
     }
     case 'to_do': {
       const isChecked = block.properties?.checked?.[0]?.[0] === 'Yes';
 
-      return `
-        <div className={cs('notion-to-do', blockId)}>
-          <div className='notion-to-do-item'>
-            ${renderCheckbox({ isChecked })}
-            <div class='notion-to-do-body ${isChecked ? 'notion-to-do-checked' : ''}'>
-                ${renderText({ value: block.properties?.title, block, recordMap })}
-            </div>
-          </div>
-          <div class='notion-to-do-children'>${children}</div>
-        </div>
-      `;
+      return todoTemplate({
+        blockId,
+        renderCheckbox: renderCheckbox({ isChecked }),
+        isChecked: isChecked ? 'notion-to-do-checked' : '',
+        renderText: renderText({
+          value: block.properties?.title,
+          block,
+          recordMap,
+        }),
+        children,
+      });
     }
     case 'transclusion_container': {
-      return `<div class='notion-sync-block ${blockId}'>${children}</div>`;
+      return transclusionTemplate({ blockId, children });
     }
     case 'transclusion_reference': {
       return renderSyncpointer({ block, level: level + 1, ...props }) || '';
@@ -496,18 +473,14 @@ export function renderBlock({
       const linkedBlock = recordMap.block[blockPointerId]?.value;
       if (!linkedBlock) return '';
 
-      return `
-        <a class='notion-page-link ${blockPointerId}' href='${mapPageUrl(blockPointerId)}'>
-          ${renderPageTitle({ block: linkedBlock, recordMap })}
-        </a>
-      `;
+      return aliasTemplate({
+        blockPointerId,
+        url: mapPageUrl(blockPointerId),
+        renderPageTitle: renderPageTitle({ block: linkedBlock, recordMap }),
+      });
     }
     case 'table': {
-      return `
-        <table class='notion-simple-table ${blockId}'>
-          <tbody>${children}</tbody>
-        </table>
-      `;
+      return tableTemplate({ blockId, children });
     }
     case 'table_row': {
       const tableBlock = recordMap.block[block.parent_id]?.value as TableBlock;
@@ -517,29 +490,28 @@ export function renderBlock({
 
       if (!tableBlock || !order) return '';
 
-      return `
-        <tr
-          class='notion-simple-table-row ${backgroundColor ? `notion-${backgroundColor}` : ''} ${blockId}
-        >
-          ${order
-            .map(column => {
-              const color = formatMap?.[column]?.color;
+      const td = order
+        .map(column => {
+          const color = formatMap?.[column]?.color;
 
-              return `
-              <td
-                key=${column}
-                class=${color ? `notion-${color}` : ''}
-                style='width: ${formatMap?.[column]?.width || 120}'
-              >
-                <div class='notion-simple-table-cell'>
-                  ${renderText({ value: block.properties?.[column] || [['ㅤ']], block, recordMap })}
-                </div>
-              </td>
-            `;
-            })
-            .join('')}
-        </tr>
-      `;
+          return tdTemplate({
+            column,
+            color: color ? `notion-${color}` : '',
+            width: formatMap?.[column]?.width || 120,
+            renderText: renderText({
+              value: block.properties?.[column] || [['ㅤ']],
+              block,
+              recordMap,
+            }),
+          });
+        })
+        .join('');
+
+      return trTemplate({
+        blockId,
+        backgroundColor: backgroundColor ? `notion-${backgroundColor}` : '',
+        td,
+      });
     }
     case 'external_object_instance': {
       return renderEOI({ block, className: blockId }) || '';
