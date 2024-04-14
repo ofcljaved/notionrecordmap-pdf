@@ -4,8 +4,9 @@
   "description": "Convert notionrecordmap into pdf",
   "main": "index.js",
   "scripts": {
+    "copy-files": "cpy './src/**/*.{css}' ./dist",
     "dev": "ts-node src/index.ts",
-    "build": "tsc",
+    "build": "tsc -b && npm run copy-files",
     "start": "node dist/index.js",
     "lint": "eslint --max-warnings 0 --config .eslintrc .",
     "lint:fix": "eslint --fix --max-warnings 0 --config .eslintrc .",
@@ -22,6 +23,7 @@
     "@types/prismjs": "^1.26.3",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
+    "cpy-cli": "^5.0.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-only-warn": "^1.1.0",
