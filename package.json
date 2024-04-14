@@ -1,10 +1,10 @@
 {
   "name": "notionrecordmap-pdf",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Convert notionrecordmap into pdf",
   "main": "./dist/index.js",
   "scripts": {
-    "copy-files": "cpy './src/**/*.{css}' ./dist",
+    "copy-files": "cpy ./src/**/*.css ./dist",
     "dev": "ts-node src/index.ts",
     "build": "tsc -b && npm run copy-files",
     "start": "node dist/index.js",
