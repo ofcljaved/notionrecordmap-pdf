@@ -2,7 +2,7 @@
   "name": "notionrecordmap-pdf",
   "version": "1.0.0",
   "description": "Convert notionrecordmap into pdf",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "scripts": {
     "copy-files": "cpy './src/**/*.{css}' ./dist",
     "dev": "ts-node src/index.ts",
@@ -14,8 +14,12 @@
     "format:fix": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "notion-pdf",
+    "pdf",
+    "notionrecordmap"
+  ],
+  "author": "ofcljaved",
   "license": "ISC",
   "devDependencies": {
     "@commitlint/cli": "^19.2.0",
@@ -37,5 +41,8 @@
     "handlebars": "^4.7.8",
     "prismjs": "^1.29.0",
     "puppeteer": "^22.6.1"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
