@@ -1,3 +1,8 @@
+import {
+  iconTemplate,
+  nonIconTemplate,
+  pageIconTemplate,
+} from './handlebars/pageIcon';
 import { Block, CalloutBlock, ExtendedRecordMap, PageBlock } from './types';
 import { getBlockIcon } from './utils/getBlockIcon';
 import { getBlockTitle } from './utils/getBlockTitle';
@@ -41,11 +46,7 @@ export function rendererPageIcon({
       const url = mapImageUrl(icon, block);
       isImage = true;
 
-      content = `<img
-          src=${url}
-          alt=${title || 'page icon'}
-          class='${className} notion-page-icon'
-        />`;
+      content = iconTemplate({ url, title: title || 'page icon', className });
     } else if (icon && icon.startsWith('/icons/')) {
       const url =
         'https://www.notion.so' +
@@ -53,20 +54,10 @@ export function rendererPageIcon({
         '?mode=' +
         (darkMode ? 'dark' : 'light');
 
-      content = `<img
-          src=$${url}
-          alt={title || 'page icon'}
-          class='${className} notion-page-icon'
-        />`;
+      content = iconTemplate({ url, title: title || 'page icon', className });
     } else if (!icon) {
       isImage = false;
-      content = `<span
-          class='${className} notion-page-icon'
-          role='img'
-          aria-label=${icon}
-        >
-          ${icon}
-        </span>`;
+      content = nonIconTemplate({ className, icon });
     }
   }
 
@@ -74,12 +65,10 @@ export function rendererPageIcon({
     return null;
   }
 
-  return `<div
-      class=
-        ${className}
-        ${inline ? 'notion-page-icon-inline' : 'notion-page-icon-hero'}
-        ${isImage ? 'notion-page-icon-image' : 'notion-page-icon-span'}
-    >
-      ${content}
-    </div>`;
+  return pageIconTemplate({
+    className,
+    content,
+    inline: inline ? 'notion-page-icon-inline' : 'notion-page-icon-hero',
+    isImage: isImage ? 'notion-page-icon-image' : 'notion-page-icon-span',
+  });
 }

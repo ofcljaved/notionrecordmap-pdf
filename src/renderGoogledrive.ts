@@ -1,3 +1,10 @@
+import {
+  domainTemplate,
+  driveBodyTemplate,
+  driveTemplate,
+  iconTemplate,
+  titleTemplate,
+} from './handlebars/googleDrive';
 import { GoogleDriveBlock } from './types';
 import { mapImageUrl } from './utils/mapImageUrl';
 
@@ -19,26 +26,23 @@ export function renderGoogledrive({ block, blockId }: RenderGoogledriveProps) {
     console.log(err);
   }
 
-  return `<div class='notion-google-drive ${blockId}'>
-      <a class='notion-google-drive-link' href=${properties.url} target='_blank' rel='noopener noreferrer'>
-        <div class='notion-google-drive-preview'>
-          <img src=${mapImageUrl(properties.thumbnail, block)} alt=${properties.title || 'Google Drive Document'} />
-        </div>
-        <div class='notion-google-drive-body'>
-          ${properties.title ? `<div class='notion-google-drive-body-title'>${properties.title}</div>` : ''}
-          ${
-            properties.icon && domain
-              ? `<div class='notion-google-drive-body-source'>
-              ${
-                properties.icon
-                  ? `<div class='notion-google-drive-body-source-icon' style= 'background-image: url(${properties.icon})'/>`
-                  : ''
-              }
-              ${domain ? `<div class='notion-google-drive-body-source-domain'>${domain}</div>` : ''}
-            </div>`
-              : ''
-          }
-        </div>
-      </a>
-    </div>`;
+  const title = properties.title
+    ? titleTemplate({ title: properties.title })
+    : '';
+
+  const icon = properties.icon ? iconTemplate({ icon: properties.icon }) : '';
+
+  const domainSource = domain ? domainTemplate({ domain }) : '';
+
+  const driveBody =
+    properties.icon && domain ? driveBodyTemplate({ icon, domainSource }) : '';
+
+  return driveTemplate({
+    blockId,
+    url: properties.url,
+    src: mapImageUrl(properties.thumbnail, block),
+    alt: properties.title || 'Google Drive Document',
+    title,
+    driveBody,
+  });
 }

@@ -1,3 +1,16 @@
+import {
+  assetTemplate,
+  embedVideoTemplate,
+  figCaptionTemplate,
+  figureTemplate,
+  formTemplate,
+  gistTemplate,
+  imgTemplate,
+  pdfTemplate,
+  tweetTemplate,
+  urlTemplate,
+  videoTemplate,
+} from './handlebars/asset';
 import { renderText } from './renderText';
 import { BaseContentBlock, Block, ExtendedRecordMap } from './types';
 import { getTextContent } from './utils/getTextContent';
@@ -54,11 +67,13 @@ function assets({
 
   const children =
     block?.properties?.caption && !isURL
-      ? `
-    <figcaption className='notion-asset-caption'>
-      ${renderText({ value: block.properties.caption, block: block as Block, recordMap })}
-    </figcaption>
-    `
+      ? figCaptionTemplate({
+          renderText: renderText({
+            value: block.properties.caption,
+            block: block as Block,
+            recordMap,
+          }),
+        })
       : '';
 
   const assetStyle: CSSProperties = {};
@@ -160,15 +175,11 @@ function assets({
     const divStyle = Object.entries(newAssetStyle)
       .map(elem => elem.join(':'))
       .join(';');
-    content = `
-      <div style="${divStyle}">
-        <div data-id="${id}">Tweet are not supported</div>
-      </div>
-    `;
+    content = tweetTemplate({ divStyle, id });
   } else if (block.type === 'pdf') {
     if (!isServer) {
       // console.log('pdf', block, signedUrl)
-      content = `<div>PDF ${source} are not supported</div>`;
+      content = pdfTemplate({ source });
     }
   } else if (
     block.type === 'embed' ||
@@ -193,13 +204,13 @@ function assets({
       source.indexOf('videoask') < 0 &&
       source.indexOf('getcloudapp') < 0
     ) {
-      content = `<div>Video title:${block.type} ${source} are not supported</div>`;
+      content = videoTemplate({ type: block.type, source });
     } else {
       let src = block.format?.display_source || source;
 
       if (src) {
         if (block.type === 'video') {
-          content = `<div>Youtube Video ${src} are not supported</div>`;
+          content = embedVideoTemplate({ src });
         } else if (block.type === 'gist') {
           if (!src.endsWith('.pibb')) {
             src = `${src}.pibb`;
@@ -210,15 +221,13 @@ function assets({
             .map(elem => elem.join(':'))
             .join(';');
 
-          content = `<iframe style="${gistStyle}" class='notion-asset-object-fit' src="${src}" title='GitHub Gist' frameBorder='0'allow-forms allow-same-origin' scrolling='auto'
-            />`;
+          content = gistTemplate({ gistStyle, src });
         } else {
           src += block.type === 'typeform' ? '&disable-auto-focus=true' : '';
           const gistStyle = Object.entries(assetStyle)
             .map(elem => elem.join(':'))
             .join(';');
-          content = `<iframe class='notion-asset-object-fit' style="${gistStyle}" src="${src}" title="${`iframe ${block.type}`}" frameBorder='0' allowFullScreen scrolling='auto'
-            />`;
+          content = formTemplate({ type: block.type, gistStyle, src });
         }
       }
     }
@@ -233,19 +242,18 @@ function assets({
     const imgStyle = Object.entries(assetStyle)
       .map(elem => elem.join(':'))
       .join(';');
-    content = `<img src="${src}" alt="${alt}" height="${style.height}" style="${imgStyle}" />`;
+    content = imgTemplate({ height: style.height, src, alt, imgStyle });
   }
 
   const divStyle = Object.entries(style)
     .map(elem => elem.join(':'))
     .join(';');
-  return `
-      <div style="${divStyle}">
-        ${content}
-        ${block.type === 'image' ? children : ''}
-      </div>
-      ${block.type !== 'image' ? children : ''}
-      `;
+  return assetTemplate({
+    divStyle,
+    content,
+    imgChildren: block.type === 'image' ? children : '',
+    children: block.type !== 'image' ? children : '',
+  });
 }
 
 export function renderAssets({ block, blockId, recordMap }: RenderAssetsProps) {
@@ -263,25 +271,21 @@ export function renderAssets({ block, blockId, recordMap }: RenderAssetsProps) {
       }
     }
   }
-
-  const figure = `<figure
-      class='notion-asset-wrapper notion-asset-wrapper-${block.type} ${value.format?.block_full_width ? 'notion-asset-wrapper-full' : ''} ${blockId}'
-    >
-      ${assets({ block: value, isURL, recordMap })}
-    </figure>`;
+  const figure = figureTemplate({
+    type: block.type,
+    fullWidth: value.format?.block_full_width
+      ? 'notion-asset-wrapper-full'
+      : '',
+    blockId,
+    assets: assets({ block: value, isURL, recordMap }),
+  });
 
   if (isURL) {
     const caption = value?.properties?.caption?.[0]?.[0];
     const id = parsePageId(caption, { uuid: true });
     const isPage = caption?.charAt(0) === '/' && id;
 
-    return `<a
-          style='width:100%;'
-          href=${isPage ? mapPageUrl(id) : caption}
-          target='blank_'
-        >
-          ${figure}
-        </a>`;
+    return urlTemplate({ href: isPage ? mapPageUrl(id) : caption, figure });
   }
 
   return figure;

@@ -1,5 +1,7 @@
+import { pageTitleTemplate } from './handlebars/pageTitle';
 import { rendererPageIcon } from './renderPageIcon';
-import { Block, ExtendedRecordMap } from './types';
+import { renderText } from './renderText';
+import { Block, Decoration, ExtendedRecordMap } from './types';
 import { getBlockTitle } from './utils/getBlockTitle';
 
 interface RenderPageTitleProps {
@@ -12,8 +14,8 @@ export function renderPageTitle({
   block,
   recordMap,
   className,
-}: RenderPageTitleProps) {
-  if (!block) return null;
+}: RenderPageTitleProps): string {
+  if (!block) return '';
 
   if (
     block.type === 'collection_view_page' ||
@@ -21,25 +23,36 @@ export function renderPageTitle({
   ) {
     const title = getBlockTitle(block, recordMap);
     if (!title) {
-      return null;
+      return '';
     }
 
-    return `
-      <span class='${className} notion-page-title'>
-        ${rendererPageIcon({ block, recordMap, defaultIcon: null, className: 'notion-page-title-icon' })}
-        <span class='notion-page-title-text'>
-          <Text value={titleDecoration} block={block} /> //TODO:
-        </span>
-      </span>`;
-  }
-  if (!block.properties?.title) return null;
+    const titleDecoration: Decoration[] = [[title]];
 
-  return `
-    <span class='${className} notion-page-title'>
-      ${rendererPageIcon({ block, recordMap, defaultIcon: null, className: 'notion-page-title-icon' })}
-      <span class='notion-page-title-text'>
-        <Text value={block.properties?.title} block={block} /> //TODO:
-      </span>
-    </span>
-    `;
+    return pageTitleTemplate({
+      className,
+      pageIcon: rendererPageIcon({
+        block,
+        recordMap,
+        defaultIcon: null,
+        className: 'notion-page-title-icon',
+      }),
+      renderText: renderText({ value: titleDecoration, block, recordMap }),
+    });
+  }
+  if (!block.properties?.title) return '';
+
+  return pageTitleTemplate({
+    className,
+    pageIcon: rendererPageIcon({
+      block,
+      recordMap,
+      defaultIcon: null,
+      className: 'notion-page-title-icon',
+    }),
+    renderText: renderText({
+      value: block.properties?.title,
+      block,
+      recordMap,
+    }),
+  });
 }

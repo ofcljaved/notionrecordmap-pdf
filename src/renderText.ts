@@ -1,3 +1,16 @@
+import {
+  bTemplate,
+  cTemplate,
+  commaTemplate,
+  defaultUserTemplate,
+  hTemplate,
+  iTemplate,
+  linkTemplate,
+  pTemplate,
+  sTemplate,
+  underscoresTemplate,
+  userTemplate,
+} from './handlebars/text';
 import { renderEOI } from './renderEOI';
 import { renderPageTitle } from './renderPageTitle';
 import { Block, Decoration, ExtendedRecordMap } from './types';
@@ -16,7 +29,7 @@ export function renderText({ value, block, recordMap }: RenderTextProps) {
   const element = value?.map(([text, decorations], index) => {
     if (!decorations) {
       if (text === ',') {
-        return `<span key=${index} style='padding:0.5em;' />`;
+        return commaTemplate({ index });
       } else {
         return text;
       }
@@ -29,12 +42,10 @@ export function renderText({ value, block, recordMap }: RenderTextProps) {
           const linkedBlock = recordMap.block[blockId]?.value;
           if (!linkedBlock) return null;
 
-          return `<a
-                class='notion-link'
-                href=${mapPageUrl(blockId)}
-              >
-                ${renderPageTitle({ block: linkedBlock, recordMap })}
-              </a>`;
+          return pTemplate({
+            url: mapPageUrl(blockId),
+            pageTitle: renderPageTitle({ block: linkedBlock, recordMap }),
+          });
         }
 
         case '‣': {
@@ -51,13 +62,10 @@ export function renderText({ value, block, recordMap }: RenderTextProps) {
                 .filter(Boolean)
                 .join(' ');
 
-              return `
-                  <img
-                    class='notion-user'
-                    src=${mapImageUrl(user.profile_photo, block)}
-                    alt=${name}
-                  />
-                  `;
+              return userTemplate({
+                url: mapImageUrl(user.profile_photo, block),
+                alt: name,
+              });
             }
 
             default: {
@@ -65,38 +73,30 @@ export function renderText({ value, block, recordMap }: RenderTextProps) {
 
               if (!linkedBlock) return null;
 
-              return `
-                  <a
-                    class='notion-link'
-                    href=${mapPageUrl(id)}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    ${renderPageTitle({ block: linkedBlock, recordMap })}
-                  </a>
-                `;
+              return defaultUserTemplate({
+                url: mapPageUrl(id),
+                pageTitle: renderPageTitle({ block: linkedBlock, recordMap }),
+              });
             }
           }
         }
 
         case 'h':
-          return `<span class='notion-${decorator[1]}'>${element}</span>`;
+          return hTemplate({ decorator: decorator[1], element });
         case 'c':
-          return `<code class='notion-inline-code'>${element}</code>`;
+          return cTemplate({ element });
 
         case 'b':
-          return `<b>${element}</b>`;
+          return bTemplate({ element });
 
         case 'i':
-          return `<em>${element}</em>`;
+          return iTemplate({ element });
 
         case 's':
-          return `<s>${element}</s>`;
+          return sTemplate({ element });
 
         case '_':
-          return `
-              <span class='notion-inline-underscore'>${element}</span>
-            `;
+          return underscoresTemplate({ element });
 
         case 'e':
           return null;
@@ -115,23 +115,9 @@ export function renderText({ value, block, recordMap }: RenderTextProps) {
               ? v
               : `${mapPageUrl(id)}${getHashFragmentValue(v)}`;
 
-            return `
-                <a
-                  class='notion-link'
-                  href=${href}
-                >
-                  ${element}
-                </a>
-              `;
+            return linkTemplate({ href, element });
           } else {
-            return `
-                <a
-                  class='notion-link'
-                  href=${decorator[1]}
-                >
-                  ${element}
-                </a>
-              `;
+            return linkTemplate({ href: decorator[1], element });
           }
         }
 
@@ -168,11 +154,10 @@ export function renderText({ value, block, recordMap }: RenderTextProps) {
             .filter(Boolean)
             .join(' ');
 
-          return `<img
-                class='notion-user'
-                src=${mapImageUrl(user.profile_photo, block)}
-                alt=${name}
-              />`;
+          return userTemplate({
+            name,
+            url: mapImageUrl(user.profile_photo, block),
+          });
         }
 
         case 'eoi': {

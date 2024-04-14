@@ -1,5 +1,13 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx lint-staged --allow-empty
-git add .
+npm run format || EXIT_CODE=$?
+echo "FORMAT exit code: $EXIT_CODE"
+
+npm run lint || EXIT_CODE=$?
+echo "LINT exit code: $EXIT_CODE"
+
+if [ ! -z "$EXIT_CODE" ]; then
+  echo "Exiting with exit code: $EXIT_CODE"
+  exit $EXIT_CODE
+fi
